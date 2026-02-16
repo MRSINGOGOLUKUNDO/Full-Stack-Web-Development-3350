@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>PAYE Calculator</title>
+
+<style>
+body {
+    font-family: Arial, sans-serif;
+    background: #efefef;
+    margin: 0;
+    padding: 15px;
+}
+
+.container {
+    max-width: 500px;
+    margin: auto;
+}
+
+h3 {
+    margin-top: 25px;
+    margin-bottom: 5px;
+}
+
+input {
+    width: 100%;
+    padding: 14px;
+    font-size: 16px;
+    border: none;
+    border-bottom: 2px solid #ccc;
+    background: transparent;
+}
+
+.section-line {
+    border-bottom: 1px solid #ccc;
+    margin-top: 20px;
+}
+
+.result-box {
+    background: #dcdcdc;
+    padding: 25px;
+    margin-top: 20px;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.summary p {
+    margin: 8px 0;
+}
+
+button {
+    width: 100%;
+    padding: 15px;
+    margin-top: 20px;
+    background: #005baa;
+    color: white;
+    border: none;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 30px;
+}
+
+table, th, td {
+    border: 1px solid #ccc;
+}
+
+th, td {
+    padding: 10px;
+    text-align: left;
+    font-size: 14px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h3>Basic Pay</h3>
+<input type="number" id="basic" placeholder="Enter Salary">
+
+<h3>Allowances</h3>
+<input type="number" id="allowances" placeholder="Enter allowances">
+
+<h3>Statutory Contribution</h3>
+<input type="number" id="statutory" placeholder="Enter additional contribution (optional)">
+
+<div class="section-line"></div>
+
+<div class="summary">
+<p><strong>Gross/Taxable Pay:</strong> <span id="gross">0</span></p>
+<p><strong>NAPSA (5%):</strong> <span id="napsa">0</span></p>
+<p><strong>National Health Insurance (1%):</strong> <span id="nhima">0</span></p>
+<p><strong>Total Contributions:</strong> <span id="totalContrib">0</span></p>
+<p><strong>Total Tax Deductions (PAYE):</strong> <span id="paye">0</span></p>
+<p><strong>Total Deductions:</strong> <span id="totalDeduct">0</span></p>
+</div>
+
+<button onclick="calculate()">Calculate</button>
+
+<div class="result-box">
+Net Salary: ZMW <span id="netSalary">0</span>
+</div>
+
+<h3>PAYE Tax Bands</h3>
+
+<table>
+<tr><th>Tax Bands</th><th>Rate</th></tr>
+<tr><td>First K5,100.00</td><td>0%</td></tr>
+<tr><td>Next K5,100.01 - K7,100.00</td><td>20%</td></tr>
+<tr><td>Next K7,100.01 - K9,200.00</td><td>30%</td></tr>
+<tr><td>Above K9,200.00</td><td>37%</td></tr>
+</table>
+
+</div>
+
+<script>
+function calculate() {
+
+let basic = parseFloat(document.getElementById("basic").value) || 0;
+let allowances = parseFloat(document.getElementById("allowances").value) || 0;
+let statutory = parseFloat(document.getElementById("statutory").value) || 0;
+
+let gross = basic + allowances;
+
+let napsa = gross * 0.05;
+let nhima = gross * 0.01;
+
+let totalContributions = napsa + nhima + statutory;
+
+let taxableIncome = gross - totalContributions;
+
+let paye = 0;
+
+// PAYE Bands
+if (taxableIncome <= 5100) {
+    paye = 0;
+} 
+else if (taxableIncome <= 7100) {
+    paye = (taxableIncome - 5100) * 0.20;
+} 
+else if (taxableIncome <= 9200) {
+    paye = (2000 * 0.20) + (taxableIncome - 7100) * 0.30;
+} 
+else {
+    paye = (2000 * 0.20) + (2100 * 0.30) + (taxableIncome - 9200) * 0.37;
+}
+
+let totalDeductions = totalContributions + paye;
+let netSalary = gross - totalDeductions;
+
+// Display results
+document.getElementById("gross").innerText = gross.toFixed(2);
+document.getElementById("napsa").innerText = napsa.toFixed(2);
+document.getElementById("nhima").innerText = nhima.toFixed(2);
+document.getElementById("totalContrib").innerText = totalContributions.toFixed(2);
+document.getElementById("paye").innerText = paye.toFixed(2);
+document.getElementById("totalDeduct").innerText = totalDeductions.toFixed(2);
+document.getElementById("netSalary").innerText = netSalary.toFixed(2);
+
+}
+</script>
+
+</body>
+</html>
